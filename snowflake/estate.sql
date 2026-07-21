@@ -82,3 +82,15 @@ CREATE USER IF NOT EXISTS SVC_DBT_RUNNER_DEV
 
 GRANT ROLE PUMPKIN_VALIDATE TO USER SVC_PUMPKIN_VALIDATE;
 GRANT ROLE DBT_RUNNER_DEV TO USER SVC_DBT_RUNNER_DEV;
+
+-- Snowflake defaults users to SECONDARY ROLES ('ALL'), which activates EVERY
+-- granted role for authorization — that would quietly widen a service login
+-- beyond its one role. Pin secondaries OFF (idempotent, covers pre-existing
+-- users too, since CREATE IF NOT EXISTS won't touch them).
+ALTER USER SVC_PUMPKIN_VALIDATE SET DEFAULT_SECONDARY_ROLES = ();
+ALTER USER SVC_DBT_RUNNER_DEV SET DEFAULT_SECONDARY_ROLES = ();
+
+-- Operator convenience: lets the admin user verify the exact privilege set of
+-- each role (e.g. `dbt build` AS ROLE DBT_RUNNER_DEV) without service creds.
+GRANT ROLE PUMPKIN_VALIDATE TO USER QUIETNODE;
+GRANT ROLE DBT_RUNNER_DEV TO USER QUIETNODE;

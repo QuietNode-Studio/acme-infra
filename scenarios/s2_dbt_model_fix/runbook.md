@@ -8,7 +8,7 @@ A "refactor" commit lands on acme-dbt main that damages `stg_orders`:
    `not_null` and `relationships` schema tests fail.
 
 `dbt build --target dev` goes red; the semantic metric no longer matches
-finance's expectation (~2.5M USD/yr order volume, not ~250M).
+finance's expectation (~$6.28M seeded order volume, not ~$628M).
 
 ## Ticket to file
 
@@ -16,7 +16,7 @@ finance's expectation (~2.5M USD/yr order volume, not ~250M).
 >
 > Since the latest acme-dbt commit, `total_revenue` reads ~100× higher than
 > yesterday and dbt CI is failing on `stg_orders` (`not_null`,
-> `relationships`). Finance expects annual order volume around $2.5M. Please
+> `relationships`). Finance expects seeded order volume around $6.28M. Please
 > fix the staging layer, make the dbt build green on the dev target, and
 > confirm the metric is back in the expected range.
 
