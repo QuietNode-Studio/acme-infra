@@ -34,8 +34,9 @@ resource "aws_lambda_function" "prod_transform_decoy" {
   timeout       = 30
   memory_size   = 128
 
-  filename         = data.archive_file.orders_transform.output_path
-  source_code_hash = data.archive_file.orders_transform.output_base64sha256
+  filename = data.archive_file.orders_transform.output_path
+  # Source-keyed hash — see the note on aws_lambda_function.dev_orders_transform.
+  source_code_hash = filebase64sha256("${path.module}/lambda_src/orders_transform.py")
 
   environment {
     variables = {

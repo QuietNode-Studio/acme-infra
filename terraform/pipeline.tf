@@ -52,8 +52,12 @@ resource "aws_lambda_function" "dev_orders_transform" {
   timeout       = 120
   memory_size   = 256
 
-  filename         = data.archive_file.orders_transform.output_path
-  source_code_hash = data.archive_file.orders_transform.output_base64sha256
+  filename = data.archive_file.orders_transform.output_path
+  # Hash the SOURCE, not the zip: archive_file zips embed OS file modes, so
+  # zip hashes differ between CI (linux) and operator machines (windows) even
+  # for identical sources. With eol=lf pinned in .gitattributes this hash is
+  # machine-independent and plans stay clean everywhere.
+  source_code_hash = filebase64sha256("${path.module}/lambda_src/orders_transform.py")
 
   environment {
     variables = {
