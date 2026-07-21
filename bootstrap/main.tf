@@ -182,9 +182,12 @@ resource "aws_iam_role_policy" "ci_deploy" {
         Resource = ["arn:aws:secretsmanager:us-east-2:${local.account_id}:secret:acme/*"]
       },
       {
-        Sid      = "Budgets"
-        Effect   = "Allow"
-        Action   = ["budgets:ViewBudget", "budgets:ModifyBudget"]
+        Sid    = "Budgets"
+        Effect = "Allow"
+        Action = [
+          "budgets:ViewBudget", "budgets:ModifyBudget",
+          "budgets:TagResource", "budgets:UntagResource", "budgets:ListTagsForResource",
+        ]
         Resource = ["arn:aws:budgets::${local.account_id}:budget/acme-*"]
       },
       {
