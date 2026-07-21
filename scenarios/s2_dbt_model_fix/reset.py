@@ -27,7 +27,8 @@ def main():
             return
         path.write_text(GOOD, newline="\n")
         run(tmp, "git", "add", MODEL)
-        run(tmp, "git", "commit", "-m", "revert: restore canonical stg_orders (scenario reset)")
+        run(tmp, "git", "-c", "user.name=Acme Operator", "-c", "user.email=ops@acme-example.invalid",
+            "commit", "-m", "revert: restore canonical stg_orders (scenario reset)")
         run(tmp, "git", "push", "origin", "main")
     evidence("S2", "reset", "canonical stg_orders restored on acme-dbt main")
     print("S2 reset: estate green (rerun dbt build to confirm).")

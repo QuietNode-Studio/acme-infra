@@ -31,7 +31,8 @@ def main():
             return
         path.write_text(BROKEN, newline="\n")
         run(tmp, "git", "add", MODEL)
-        run(tmp, "git", "commit", "-m", "chore: refresh staging logic for orders")
+        run(tmp, "git", "-c", "user.name=Acme Operator", "-c", "user.email=ops@acme-example.invalid",
+            "commit", "-m", "chore: refresh staging logic for orders")
         run(tmp, "git", "push", "origin", "main")
     evidence("S2", "arm", "defect landed on acme-dbt main (amount x100, cus-0001 nulled)")
     print("S2 armed: dbt build on dev target will fail; ticket ACME-102 can be filed.")
