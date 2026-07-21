@@ -1,0 +1,6 @@
+# Force LF everywhere so archive_file zips hash identically on every machine
+# (CI runners and Windows checkouts alike) — keeps terraform plan clean
+# regardless of who runs it.
+* text=auto eol=lf
+*.png binary
+*.zip binary
