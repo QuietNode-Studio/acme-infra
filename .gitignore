@@ -1,0 +1,21 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+.terraform.tfstate.lock.info
+
+# Local variable files — NEVER commit values
+*.tfvars
+!*.tfvars.example
+
+# Build artifacts
+terraform/.build/
+__pycache__/
+*.pyc
+
+# OS noise
+.DS_Store
+Thumbs.db

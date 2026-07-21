@@ -1,0 +1,49 @@
+# EXAMPLE — canonical shape of an earned grant. The .example suffix keeps it
+# out of terraform. A real grant arrives as a Pumpkin-authored PR with a real
+# ticket id, a fresh expiry, and this exact structure.
+#
+# Every marked line is a house rule; the reviewer checks each one.
+
+resource "aws_iam_role" "grant_ACME_123_invoke" {
+  name        = "acme-grant-ACME-123"                # one task, one role
+  description = "TEMPORARY: invoke dev orders transform to verify ACME-123 fix. Expires 2026-07-20T18:00:00Z."
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid    = "PumpkinRuntimeOnlyWithExpiry"
+      Effect = "Allow"
+      Principal = {
+        AWS = "arn:aws:iam::488179516291:role/acme-pumpkin-runtime" # rule 2: exactly this
+      }
+      Action = "sts:AssumeRole"
+      Condition = {
+        StringEquals = { "sts:ExternalId" = "acme-pumpkin" }        # rule 2: ExternalId
+        DateLessThan = { "aws:CurrentTime" = "2026-07-20T18:00:00Z" } # rule 3: ≤24h out
+      }
+    }]
+  })
+
+  tags = {
+    ticket  = "ACME-123"
+    expires = "2026-07-20T18:00:00Z"
+    granted = "lambda-invoke-dev-orders-transform"
+  }
+}
+
+resource "aws_iam_role_policy" "grant_ACME_123_invoke" {
+  name = "scoped-actions"
+  role = aws_iam_role.grant_ACME_123_invoke.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid    = "ExactActionExactResource"
+      Effect = "Allow"
+      Action = ["lambda:InvokeFunction"]              # rule 1: exact actions, no wildcards
+      Resource = [
+        "arn:aws:lambda:us-east-2:488179516291:function:acme-dev-orders-transform" # rule 1+5: exact dev ARN
+      ]
+    }]
+  })
+}
