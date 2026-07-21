@@ -36,6 +36,11 @@ data "aws_caller_identity" "current" {}
 locals {
   account_id = data.aws_caller_identity.current.account_id
   repo       = "QuietNode-Studio/acme-infra"
+  # This org issues immutable-ID subject claims (org@id/repo@id). Pinning the
+  # ids is deliberate: the trust survives (and is immune to) renames. The
+  # name-based patterns are kept for portability if the org ever reverts to
+  # classic sub claims. Diagnosed 2026-07-21 via a temporary claims workflow.
+  repo_with_ids = "QuietNode-Studio@263530096/acme-infra@1307155172"
 }
 
 # ── 1. Terraform state bucket (native S3 lockfile — no DynamoDB needed) ───────
@@ -99,6 +104,8 @@ resource "aws_iam_role" "ci_deploy" {
           "token.actions.githubusercontent.com:sub" = [
             "repo:${local.repo}:ref:refs/heads/main",
             "repo:${local.repo}:pull_request",
+            "repo:${local.repo_with_ids}:ref:refs/heads/main",
+            "repo:${local.repo_with_ids}:pull_request",
           ]
         }
       }
